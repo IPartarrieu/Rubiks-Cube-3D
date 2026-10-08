@@ -1,0 +1,16 @@
+{
+  "name": "Cubo Rubik 3D",
+  "short_name": "Cubo 3D",
+  "description": "Cubo 3×3, 2×2, Pyraminx y Megaminx en 3D: mézclalos y mira cómo se resuelven giro a giro.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#0b1020",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

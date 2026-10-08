@@ -395,4 +395,6 @@ $('btnSolve').onclick = async () => {
 let saved = 'cube3';
 try { saved = localStorage.getItem('rubik-kind') || saved; } catch { /* sin almacenamiento */ }
 select(VARIANTS[saved] ? saved : 'cube3');
+// App instalable y usable sin conexión (PWA)
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 window.rubik = { turn, readState, solved: () => isSolved(P, readState()), select, camera, get P() { return P; } }; // para pruebas

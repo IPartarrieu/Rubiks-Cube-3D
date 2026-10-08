@@ -2,7 +2,15 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cubo 3D">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <title>Cubo Rubik 3D</title>
 <meta name="description" content="Cubo Rubik 3D interactivo: gira las caras con notación estándar, mézclalo y mira cómo lo resuelve el algoritmo de dos fases de Kociemba.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,6 +41,7 @@
   button {
     font: inherit; color: var(--text); background: rgba(255,255,255,.06); border: 1px solid var(--line);
     border-radius: 10px; padding: 9px 0; cursor: pointer; transition: background .15s, transform .08s, opacity .15s;
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
   }
   button:hover:not(:disabled) { background: rgba(255,255,255,.13); }
   button:active:not(:disabled) { transform: scale(.96); }
@@ -78,6 +87,8 @@
     aside { border-left: 0; border-top: 1px solid var(--line); max-height: none; padding: 18px 16px; }
     header { left: 16px; top: 14px; } header h1 { font-size: 21px; }
     #hint { display: none; }
+    input[type=text] { font-size: 16px; } /* menos de 16 px hace que iOS acerque la página al escribir */
+    aside { padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
   }
 </style>
 <script type="importmap">
