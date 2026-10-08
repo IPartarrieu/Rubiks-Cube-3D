@@ -41,7 +41,12 @@
   .pad { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
   .pad button { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; }
   .pad button[data-face] { border-bottom: 3px solid var(--c); }
-  .pad button[data-face="M"] { grid-column: span 2; }
+  .pad button.wide { grid-column: span 2; }
+  .pad button[data-len="3"] { font-size: 13px; }
+  .pad button[data-len="4"], .pad button[data-len="5"] { font-size: 11px; letter-spacing: -.03em; }
+  .kinds { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .kinds button { font-weight: 600; font-size: 14px; }
+  .kinds button[aria-pressed="true"] { background: var(--accent); border-color: transparent; color: #fff; }
   .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .primary { background: var(--accent); border-color: transparent; font-weight: 600; padding: 12px 0; }
   .primary:hover:not(:disabled) { background: #6b9dff; }
@@ -57,7 +62,7 @@
   .speed { display: flex; justify-content: space-between; color: var(--muted); font-size: 13px; margin-bottom: 4px; }
   #status { font-size: 14px; min-height: 20px; color: var(--muted); }
   #status.ok { color: var(--accent2); } #status.err { color: var(--err); } #status.busy { color: var(--warn); }
-  #seq { display: flex; flex-wrap: wrap; gap: 5px; min-height: 30px; }
+  #seq { display: flex; flex-wrap: wrap; gap: 5px; min-height: 30px; max-height: 190px; overflow-y: auto; }
   #seq span {
     font: 700 13px 'JetBrains Mono', monospace; padding: 4px 8px; border-radius: 7px;
     background: rgba(255,255,255,.06); color: var(--muted); transition: background .15s, color .15s;
@@ -86,12 +91,17 @@
 <main id="stage">
   <header>
     <h1>Cubo Rubik 3D</h1>
-    <p>Mezcla, gira y resuelve con el algoritmo de Kociemba</p>
+    <p>Mezcla, gira y resuelve: 3×3, 2×2, Pyraminx y Megaminx</p>
   </header>
-  <div id="hint">Arrastra para rotar la vista · rueda para acercar · teclas U R F D L B M (Shift = inverso)</div>
+  <div id="hint">Arrastra para rotar la vista · rueda para acercar · <span id="keysHint"></span></div>
 </main>
 
 <aside>
+  <section>
+    <h2>Variante</h2>
+    <div class="kinds" id="kinds" role="group" aria-label="Variante de rompecabezas"></div>
+  </section>
+
   <section>
     <h2>Girar caras</h2>
     <div class="pad" id="pad"></div>
@@ -115,7 +125,7 @@
 
   <section>
     <div class="speed"><span>Velocidad</span><span id="speedLbl"></span></div>
-    <input type="range" id="speed" min="80" max="900" value="350" step="10" aria-label="Duración de cada giro">
+    <input type="range" id="speed" min="30" max="900" value="350" step="10" aria-label="Duración de cada giro">
   </section>
 
   <section>
@@ -126,15 +136,11 @@
 
   <section>
     <h2>Notación</h2>
-    <p class="help">
-      <code>U</code> arriba · <code>D</code> abajo · <code>F</code> frente · <code>B</code> atrás · <code>L</code> izquierda · <code>R</code> derecha.
-      La letra sola gira la cara 90° en sentido horario mirándola de frente; <code>'</code> es antihorario y <code>2</code> es 180°.
-      <code>M</code> gira la capa central entre L y R, en el mismo sentido que <code>L</code>.
-    </p>
+    <p class="help" id="notation"></p>
   </section>
 
   <footer>
-    Solver: algoritmo de dos fases de Herbert Kociemba (implementación <a href="https://github.com/ldez/cubejs" target="_blank" rel="noopener">cubejs</a>, MIT): resuelve cualquier estado en 22 movimientos o menos.
+    <span id="solverInfo"></span>
     · <a href="https://github.com/IPartarrieu/Rubiks-Cube-3D" target="_blank" rel="noopener">Código</a>
   </footer>
 </aside>

@@ -1,22 +1,31 @@
 # Rubiks-Cube-3D
 
-Cubo Rubik 3D interactivo: gira las caras con la notación estándar (`U D L R F B`, con `'` y `2`), mézclalo al azar o con tu propia secuencia, y mira cómo se resuelve paso a paso con el **algoritmo de dos fases de Kociemba**, que **siempre** llega a la solución en 22 movimientos o menos.
+Rompecabezas 3D interactivos: **cubo 3×3, cubo 2×2, Pyraminx y Megaminx**. Gira las caras con la notación estándar, mézclalos al azar o con tu propia secuencia, y mira cómo se resuelven paso a paso, con un solver que **siempre** llega a la solución.
 
 🔗 **Demo en vivo:** [ipartarrieu.github.io/Rubiks-Cube-3D](https://ipartarrieu.github.io/Rubiks-Cube-3D/)
 
 ## Qué hace
 
-- **Cubo 3D** (three.js) con piezas redondeadas; arrastra para rotar la vista.
-- **Giros por botón o teclado**: `U R F D L B` giran 90° en sentido horario; con Shift, antihorario. `M` gira la capa central (mismo sentido que `L`).
-- **Mezcla aleatoria por estado**: se elige un estado uniformemente al azar entre los ~4,3·10¹⁹ posibles (nunca uno imposible, como una esquina torcida) y se llega a él con una secuencia real de giros, igual que en las competencias oficiales (WCA).
-- **Mezcla propia**: escribe una secuencia como `R U R' U' F2 D L2`.
-- **Resolver**: el solver corre en un Web Worker y la solución se anima giro a giro, resaltando el movimiento actual.
+- **Cuatro variantes** en 3D (three.js); arrastra para rotar la vista.
+- **Giros por botón, teclado o secuencia escrita**, con la notación de cada puzzle (`U R F D L B M` en el cubo, `U L R B` y puntas `u l r b` en el Pyraminx, las 12 caras del Megaminx con giros de 72° y 144°).
+- **Mezcla aleatoria** (siempre estados alcanzables; en el 3×3, un estado uniformemente aleatorio como en las competencias WCA).
+- **Resolver**: el solver corre en un Web Worker y la solución se anima giro a giro.
+
+| Variante | Solver | Largo típico |
+|---|---|---|
+| 3×3 | Algoritmo de dos fases de Kociemba ([cubejs](https://github.com/ldez/cubejs), MIT) | ≤ 22 |
+| 2×2 | Búsqueda bidireccional exacta (solo `U R F`) | óptimo, ≤ 11 |
+| Pyraminx | Búsqueda bidireccional exacta del cuerpo + puntas | óptimo, ≤ 15 |
+| Megaminx | Colocación pieza a pieza: giros cortos y, al final, conmutadores puros (ciclos de 3 piezas y giros de orientación de 2) | 300–500 |
+
+El Megaminx no tiene un solver óptimo práctico (su espacio de estados es ~10⁶⁸), así que se resuelve como lo haría una persona: pieza a pieza, sin tocar lo ya resuelto. Cada paso deja al menos una pieza más en su lugar, por eso siempre termina. Si el estado está a 5 giros o menos de resolverse, se usa búsqueda exacta.
 
 ## Cómo está construido (`docs/`)
 
-- **`app.js`**: escena 3D, giros animados y lectura del estado. El estado se lee de la propia geometría (54 stickers → string de facelets), así lo que se resuelve es exactamente lo que se ve.
-- **`solver-worker.js`**: Kociemba vía [cubejs](https://github.com/ldez/cubejs) (MIT, en `vendor/`). Entrega primero una solución garantizada (≤ 22) y luego busca otras más cortas durante 2 s como máximo.
-- **`tests/solver.test.js`**: 200 estados aleatorios, todos resueltos (`node docs/tests/solver.test.js`). Los 18 giros de la vista 3D se verificaron contra el modelo de cubejs.
+- **`geom.js`**: geometría y modelo lógico, sin dependencias. Cada puzzle se define por sus caras y planos de corte; de ahí salen las piezas (cortando el sólido), los stickers y la permutación de cada giro. La vista 3D y los solvers usan exactamente el mismo modelo.
+- **`app.js`**: escena 3D, giros animados e interfaz. El estado se lee de la posición real de los stickers, así lo que se resuelve es lo que se ve.
+- **`solvers.js`** + **`puzzle-worker.js`**: solvers del 2×2, Pyraminx y Megaminx. **`solver-worker.js`**: Kociemba para el 3×3.
+- **Tests**: `node docs/tests/solver.test.js` (3×3, 200 estados aleatorios) y `node docs/tests/puzzles.test.mjs` (2×2, Pyraminx y Megaminx).
 
 Para correrlo en local: `cd docs && python3 -m http.server`, y abre `http://localhost:8000`.
 
