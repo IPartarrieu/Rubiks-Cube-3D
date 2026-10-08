@@ -4,6 +4,8 @@ Rompecabezas 3D interactivos: **cubo 3×3, cubo 2×2, Pyraminx y Megaminx**. Gir
 
 🔗 **Demo en vivo:** [ipartarrieu.github.io/Rubiks-Cube-3D](https://ipartarrieu.github.io/Rubiks-Cube-3D/)
 
+📱 **Instálala en tu celular** (funciona sin conexión): en iPhone, ábrela en Safari → botón Compartir → *Agregar a pantalla de inicio*. En Android, en Chrome → menú ⋮ → *Instalar app*.
+
 ## Qué hace
 
 - **Cuatro variantes** en 3D (three.js); arrastra para rotar la vista.
@@ -24,6 +26,7 @@ El Megaminx no tiene un solver óptimo práctico (su espacio de estados es ~10�
 
 - **`geom.js`**: geometría y modelo lógico, sin dependencias. Cada puzzle se define por sus caras y planos de corte; de ahí salen las piezas (cortando el sólido), los stickers y la permutación de cada giro. La vista 3D y los solvers usan exactamente el mismo modelo.
 - **`app.js`**: escena 3D, giros animados e interfaz. El estado se lee de la posición real de los stickers, así lo que se resuelve es lo que se ve.
+- **`manifest.json`** + **`sw.js`**: app instalable (PWA); el service worker guarda la app y three.js para usarla sin conexión.
 - **`solvers.js`** + **`puzzle-worker.js`**: solvers del 2×2, Pyraminx y Megaminx. **`solver-worker.js`**: Kociemba para el 3×3.
 - **Tests**: `node docs/tests/solver.test.js` (3×3, 200 estados aleatorios) y `node docs/tests/puzzles.test.mjs` (2×2, Pyraminx y Megaminx).
 
