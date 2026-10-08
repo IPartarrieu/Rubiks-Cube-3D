@@ -7,8 +7,9 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const COLORS = { U: '#f4f6fb', D: '#ffd23f', F: '#16a34a', B: '#2563eb', R: '#dc2626', L: '#f97316' };
 const NORMALS = { U: [0, 1, 0], D: [0, -1, 0], R: [1, 0, 0], L: [-1, 0, 0], F: [0, 0, 1], B: [0, 0, -1] };
 // Giro horario de cada cara (visto de frente): eje, capa y signo del ángulo.
-const TURNS = { U: ['y', 1, -1], D: ['y', -1, 1], R: ['x', 1, -1], L: ['x', -1, 1], F: ['z', 1, -1], B: ['z', -1, 1] };
-const MOVE_RE = /^[URFDLB](2|'|2')?$/;
+// M es la capa central entre L y R, y gira en el mismo sentido que L.
+const TURNS = { U: ['y', 1, -1], D: ['y', -1, 1], R: ['x', 1, -1], L: ['x', -1, 1], F: ['z', 1, -1], B: ['z', -1, 1], M: ['x', 0, 1] };
+const MOVE_RE = /^[URFDLBM](2|'|2')?$/;
 
 // ---------- escena ----------
 const stage = document.getElementById('stage');
@@ -21,6 +22,8 @@ scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnviron
 const key = new THREE.DirectionalLight(0xffffff, 1.2);
 key.position.set(5, 8, 6);
 scene.add(key);
+// Relleno suave cielo/suelo: la luz principal sigue viniendo de arriba, pero la cara D no queda negra.
+scene.add(new THREE.HemisphereLight(0xffffff, 0xd6dae3, 1.8));
 
 const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
 camera.position.set(5.2, 4.4, 6.6);
@@ -144,8 +147,9 @@ function facelets() {
       out[face][idx] = s.userData.color;
     }
   }
-  for (const f of 'URFDLB') out[f][4] = f; // centros
-  return 'URFDLB'.split('').map(f => out[f].join('')).join('');
+  // M mueve los centros: cada color se nombra según la cara donde está hoy su centro.
+  const faceOf = Object.fromEntries('URFDLB'.split('').map(f => [out[f][4], f]));
+  return 'URFDLB'.split('').map(f => out[f].map(c => faceOf[c]).join('')).join('');
 }
 const SOLVED = 'URFDLB'.split('').map(f => f.repeat(9)).join('');
 
@@ -187,10 +191,10 @@ async function run(moves, title) {
 const parse = str => str.replace(/[’´`]/g, "'").trim().split(/\s+/).filter(Boolean);
 
 // Botonera de giros
-for (const f of 'UDLRFB') for (const mod of ['', "'", '2']) {
+for (const f of 'UDLRFBM') for (const mod of ['', "'", '2']) {
   const b = Object.assign(document.createElement('button'), { textContent: f + mod, title: `Girar ${f + mod}` });
   b.dataset.face = f;
-  b.style.setProperty('--c', COLORS[f]);
+  b.style.setProperty('--c', COLORS[f] || '#8e98b8');
   b.onclick = () => single(f + mod);
   $('pad').appendChild(b);
 }
@@ -206,14 +210,14 @@ async function single(m) {
 addEventListener('keydown', e => {
   if (e.target === ui.alg || e.ctrlKey || e.metaKey || e.altKey) return;
   const f = e.code.startsWith('Key') && e.code.slice(3);
-  if (f && 'UDLRFB'.includes(f)) { e.preventDefault(); single(f + (e.shiftKey ? "'" : '')); }
+  if (f && 'UDLRFBM'.includes(f)) { e.preventDefault(); single(f + (e.shiftKey ? "'" : '')); }
 });
 
 $('btnApply').onclick = async () => {
   const moves = parse(ui.alg.value);
   const bad = moves.filter(m => !MOVE_RE.test(m));
   if (!moves.length) return status('Escribe una secuencia, por ejemplo: R U R\' U\'', 'err');
-  if (bad.length) return status(`Movimiento no válido: ${bad.join(', ')}. Usa U D L R F B con ' o 2.`, 'err');
+  if (bad.length) return status(`Movimiento no válido: ${bad.join(', ')}. Usa U D L R F B M con ' o 2.`, 'err');
   status('Aplicando mezcla…', 'busy');
   await run(moves.map(m => m.replace("2'", '2')), 'Mezcla');
   status('Mezcla aplicada. Aprieta "Resolver".');
@@ -286,4 +290,4 @@ $('btnSolve').onclick = async () => {
 };
 
 refresh();
-window.rubik = { turn, facelets, SOLVED }; // para pruebas desde la consola
+window.rubik = { turn, facelets, SOLVED, camera }; // para pruebas desde la consola

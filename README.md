@@ -7,7 +7,7 @@ Cubo Rubik 3D interactivo: gira las caras con la notación estándar (`U D L R F
 ## Qué hace
 
 - **Cubo 3D** (three.js) con piezas redondeadas; arrastra para rotar la vista.
-- **Giros por botón o teclado**: `U R F D L B` giran 90° en sentido horario; con Shift, antihorario.
+- **Giros por botón o teclado**: `U R F D L B` giran 90° en sentido horario; con Shift, antihorario. `M` gira la capa central (mismo sentido que `L`).
 - **Mezcla aleatoria por estado**: se elige un estado uniformemente al azar entre los ~4,3·10¹⁹ posibles (nunca uno imposible, como una esquina torcida) y se llega a él con una secuencia real de giros, igual que en las competencias oficiales (WCA).
 - **Mezcla propia**: escribe una secuencia como `R U R' U' F2 D L2`.
 - **Resolver**: el solver corre en un Web Worker y la solución se anima giro a giro, resaltando el movimiento actual.

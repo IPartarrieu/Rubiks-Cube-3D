@@ -41,6 +41,7 @@
   .pad { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
   .pad button { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; }
   .pad button[data-face] { border-bottom: 3px solid var(--c); }
+  .pad button[data-face="M"] { grid-column: span 2; }
   .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .primary { background: var(--accent); border-color: transparent; font-weight: 600; padding: 12px 0; }
   .primary:hover:not(:disabled) { background: #6b9dff; }
@@ -87,7 +88,7 @@
     <h1>Cubo Rubik 3D</h1>
     <p>Mezcla, gira y resuelve con el algoritmo de Kociemba</p>
   </header>
-  <div id="hint">Arrastra para rotar la vista · rueda para acercar · teclas U R F D L B (Shift = inverso)</div>
+  <div id="hint">Arrastra para rotar la vista · rueda para acercar · teclas U R F D L B M (Shift = inverso)</div>
 </main>
 
 <aside>
@@ -128,6 +129,7 @@
     <p class="help">
       <code>U</code> arriba · <code>D</code> abajo · <code>F</code> frente · <code>B</code> atrás · <code>L</code> izquierda · <code>R</code> derecha.
       La letra sola gira la cara 90° en sentido horario mirándola de frente; <code>'</code> es antihorario y <code>2</code> es 180°.
+      <code>M</code> gira la capa central entre L y R, en el mismo sentido que <code>L</code>.
     </p>
   </section>
 
